@@ -11,11 +11,14 @@ const mainMenu = () => {
       name: "action",
       message: "What do you want to do?",
       choices: [
-        { name: "View", value: "view" },
-        { name: "Add", value: "add" },
-        { name: "Edit", value: "edit" },
-        { name: "Delete", value: "delete" },
-        { name: "Exit", value: "exit"}
+        { name: "Employee - View All", value: "view" },
+        { name: "Employee - Add", value: "add" },
+        { name: "Employee - Update Role", value: "edit" },
+        { name: "Roles - View All", value: "delete" },
+        { name: "Roles - Add", value: "exit"},
+        { name: "Department - View All - Update Role", value: "edit" },
+        { name: "Department - Add", value: "delete" },
+        { name: "Quit", value: "quit"}
       ]
     }
   ];
@@ -23,7 +26,6 @@ const mainMenu = () => {
 };
 
 const init = async () => {
-  for (let count = 0; count < 3; count++) {
     await mainMenu()
     .then(answers => {
       if (answers.action === 'Action1') {
@@ -53,7 +55,6 @@ const init = async () => {
     .catch((error, response) => {
       console.error('Error:', error);
     });
-  }
 }
 
 init()
