@@ -1,7 +1,47 @@
 const inquirer = require('inquirer');
-const util = require('util')
+const express = require('express');
+// Import and require mysql2
+const mysql = require('mysql2');
 
-// Clear the screen
+// Connect to database
+const db = mysql.createConnection(
+  {
+    host: 'localhost',
+    // MySQL username,
+    user: 'root',
+    // MySQL password
+    password: 'HereYouGo',
+    database: 'employee_db'
+  },
+  console.log(`Connected to the employee_db database.`)
+);
+
+async function viewAllEmployees() {
+  // Query database
+//  db.query('SELECT * FROM employees', function (err, results) {
+    db.query('SELECT employees.id, employees.first_name, employees.last_name, roles.title AS title JOIN employees.role_id=department.id', function (err, results) {
+      console.table(results);
+    init();
+  });
+}
+
+async function viewAllRoles() {
+  // Query database
+  db.query('SELECT * FROM roles', function (err, results) {
+    console.table(results);
+    init();
+  });
+}
+
+async function viewAllDepartments() {
+  // Query database
+  db.query('SELECT * FROM departments', function (err, results) {
+    console.table(results);
+    init();
+  });
+}
+
+//Clear the screen
 process.stdout.write("\u001b[2J\u001b[0;0H");
 
 const mainMenu = () => {
@@ -11,13 +51,14 @@ const mainMenu = () => {
       name: "action",
       message: "What do you want to do?",
       choices: [
-        { name: "Employee - View All", value: "view" },
-        { name: "Employee - Add", value: "add" },
-        { name: "Employee - Update Role", value: "edit" },
-        { name: "Roles - View All", value: "delete" },
-        { name: "Roles - Add", value: "exit"},
-        { name: "Department - View All - Update Role", value: "edit" },
-        { name: "Department - Add", value: "delete" },
+        { name: "Employee - View All", value: "view_all_employees" },
+        { name: "Employee - Add", value: "add-employee" },
+        { name: "Employee - Update Role", value: "edit-employee-role" },
+        { name: "Roles - View All", value: "view-all-roles" },
+        { name: "Roles - Add", value: "add-role"},
+        { name: "Roles - Update", value: "update-role"},
+        { name: "Department - View All", value: "view-all-departments" },
+        { name: "Department - Add", value: "add-department" },
         { name: "Quit", value: "quit"}
       ]
     }
@@ -28,33 +69,39 @@ const mainMenu = () => {
 const init = async () => {
     await mainMenu()
     .then(answers => {
-      if (answers.action === 'Action1') {
-        return Promise.resolve('hello world');
-      }
-      else if (answers.action === 'Action2') {
-        return new Promise((resolve, reject) => {
-          inquirer
-            .prompt([
-              {
-                type: 'input',
-                name: 'secretCode',
-                message: "Enter a secret code:"
-              }
-            ])
-            .then(answers => {
-              resolve(answers);
-            })
-        });
-      }
-      else {
-        console.log('Exiting program.')
-        process.exit(0);
-      }
+      switch (answers.action) {
+        case ("view_all_employees"):{
+          viewAllEmployees();
+          break;
+        }
+        case ("add-employee"):{
+          break;
+        }
+        case ("edit-employee-role"):{
+          break;
+        }
+        case ("view-all-roles"):{
+          viewAllRoles();
+          break;
+        }
+        case ("add-role"):{
+          break;
+        }
+        case ("view-all-departments"):{
+          viewAllDepartments();
+          break;
+        }
+        case ("add-department"):{
+          break;
+        }      
+        case ("quit"):{
+          break;
+        }
+      }        
     })
-    .then((data) => { console.log(util.inspect(data, { showHidden: false, depth: null })); })
-    .catch((error, response) => {
-      console.error('Error:', error);
-    });
-}
+    // .catch((error, response) => {
+    //   console.error('Error:', error);
+    // });
+    };
 
 init()
