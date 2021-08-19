@@ -19,7 +19,7 @@ const db = mysql.createConnection(
 async function viewAllEmployees() {
   // Query database
 //  db.query('SELECT * FROM employees', function (err, results) {
-    db.query('SELECT employees.id, employees.first_name, employees.last_name, roles.title AS title JOIN employees.role_id=department.id', function (err, results) {
+    db.query('SELECT employees.first_name, employees.last_name, roles.title AS title, roles.salary AS salary FROM employees LEFT JOIN roles ON employees.role_id=roles.id', function (err, results) {
       console.table(results);
     init();
   });
