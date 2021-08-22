@@ -81,7 +81,7 @@ const mainMenu = () => {
         { name: "Add a dempartment", value: "add-department" },
         { name: "Add a role", value: "add-role"},
         { name: "Add an employee", value: "add-employee" },
-        { name: "Update employee role", value: "edit-employee-role" },
+        { name: "Update employee role", value: "update-employee-role" },
         { name: "Quit", value: "quit"}
       ]
     }
@@ -162,6 +162,30 @@ async function addRole(roles, departments) {
 });
 }
 
+async function updateEmployeeRole(employees,roles) {
+  inquirer
+.prompt([
+{
+  type: "list",
+  name: "employee",
+  message: "Employee: ",
+  choices: employees[0].map(employee => ({name:employee.Employee, value:employee.id}))
+},
+{
+  type: "list",
+  name: "name",
+  message: "Role: ",
+  choices: roles[0].map(role => ({name:role.title, value:role.id}))
+}
+])
+.then(function({name, employee}) {
+  let sql =`UPDATE employees SET role_id =${name} WHERE id = ${employee}`;
+//  db.query(`UPDATE employees SET WHERE ?`,[{id:employee, role_id:name}]);
+  db.query(sql);
+  init();
+});
+}
+
 const init = async () => {
   let all_departments;
   let all_roles;
@@ -169,7 +193,7 @@ const init = async () => {
   try {
       all_departments = await db.promise().query('SELECT * from departments')
       all_roles = await db.promise().query('SELECT * from roles')
-//      all_managers = await db.promise().query('SELECT * from employees')
+      all_employees = await db.promise().query('SELECT CONCAT(first_name, " ", last_name) AS Employee, id from employees')
       all_managers = await db.promise().query('SELECT CONCAT(first_name, " ", last_name) AS Manager, id FROM employees WHERE manager_id IS NULL')
   } catch (error) {
       console.log(error)
@@ -185,7 +209,8 @@ const init = async () => {
         addEmployee(all_roles, all_departments,all_managers);
         break;
       }
-      case ("edit-employee-role"):{
+      case ("update-employee-role"):{
+        updateEmployeeRole(all_employees, all_roles);
         break;
       }
       case ("view-all-roles"):{
