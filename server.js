@@ -90,82 +90,8 @@ const mainMenu = () => {
   return inquirer.prompt(questions);
 };
 
-// function addEmployee() {
-//   inquirer
-//     .prompt([
-//       {
-//         type: "input",
-//         message: "First name of employee?",
-//         name: "first_name"
-//       },
-//       {
-//         type: "input",
-//         message: "Last name of employee?",
-//         name: "last_name"
-//       },
-//       {
-//         type: "list",
-//         message: "role of employee?",
-//         name: "role",
-//         choices: [
-//           "Sales Lead",
-//           "Salesperson",
-//           "Lead Engineer",
-//           "Software Engineer",
-//           "Accountant",
-//           "Legal Team Lead",
-//           "Lawyer"
-//         ]
-//       }
-//     ])
-//     .then(function({ first_name, last_name, role, manager }) {
-//       switch (role) {
-//         case "Sales Lead":
-//           var role = "1";
-//           var manager = "Ashley Rodriguez";
-//           break;
-//         case "Salesperson":
-//           var role = "2";
-//           var manager = "John Doe";
-//           break;
-//         case "Lead Engineer":
-//           var role = "3";
-//           var manager = "null";
-//           break;
-//         case "Software Engineer":
-//           var role = "4";
-//           var manager = "Ashley Rodriguez";
-//           break;
-//         case "Accountant":
-//           var role = "5";
-//           var manager = "null";
-//           break;
-//         case "Legal Team Lead":
-//           var role = "6";
-//           var manager = "null";
-//           break;
-//         case "Lawyer":
-//           var role = "7";
-//           var manager = "Sarah Lourd";
-//           break;
-//         default:
-//           break;
-//       }
-//       db.query(
-//         `INSERT INTO employees (first_name, last_name, role_id, manager) VALUES ('${first_name}', '${last_name}', '${role}', '${manager}');`,
-//         function(err, result) {
-//           if (err) throw err;
-//           init();
-//         }
-//       );
-//     });
-// }
-
-
-
-
 async function addEmployee(roles, departments, managers) {
-  inquirer
+    inquirer
   .prompt([
    {
      type: "input",
@@ -192,8 +118,8 @@ async function addEmployee(roles, departments, managers) {
  ])
  .then(function({ first_name, last_name, role, manager }) {
    db.query(`INSERT INTO employees SET ?`,[{first_name:first_name, last_name:last_name, role_id:role, manager_id:manager}]);
-init();
-});
+   init();
+  });
 }
 
 const init = async () => {
