@@ -136,6 +136,31 @@ async function addDepartment(departments) {
 });
 }
 
+async function addRole(roles, departments) {
+  inquirer
+.prompt([
+ {
+   type: "input",
+   name: "title",
+   message: "Role title: "
+ },
+ {
+  type: "input",
+  name: "salary",
+  message: "Salary: "
+},
+{
+  type: "list",
+  name: "department",
+  message: "Department: ",
+  choices: departments[0].map(department => ({name:department.name, value:department.id}))
+}
+])
+.then(function({title, salary, department}) {
+ db.query(`INSERT INTO roles SET ?`,[{title:title, salary:salary, department_id:department}]);
+ init();
+});
+}
 
 const init = async () => {
   let all_departments;
@@ -168,6 +193,7 @@ const init = async () => {
         break;
       }
       case ("add-role"):{
+        addRole(all_roles, all_departments);
         break;
       }
       case ("view-all-departments"):{
