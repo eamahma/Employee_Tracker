@@ -42,7 +42,7 @@ async function viewAllEmployees(req, res) {
 
 async function viewAllRoles() {
   // SQL Query
-  let query =`SELECT title AS 'Title', name AS 'Department',  salary AS 'Salary'
+  let query =`SELECT roles.id AS 'Role ID', title AS 'Title', name AS 'Department',  salary AS 'Salary'
   FROM roles
   JOIN departments ON roles.department_id=departments.id`;
   //Query database
@@ -75,14 +75,13 @@ const mainMenu = () => {
       name: "action",
       message: "What do you want to do?",
       choices: [
-        { name: "Employee - View All", value: "view_all_employees" },
-        { name: "Employee - Add", value: "add-employee" },
-        { name: "Employee - Update Role", value: "edit-employee-role" },
-        { name: "Roles - View All", value: "view-all-roles" },
-        { name: "Roles - Add", value: "add-role"},
-        { name: "Roles - Update", value: "update-role"},
-        { name: "Department - View All", value: "view-all-departments" },
-        { name: "Department - Add", value: "add-department" },
+        { name: "View all departments", value: "view-all-departments" },
+        { name: "View all roles", value: "view-all-roles" },
+        { name: "View all employees", value: "view_all_employees" },
+        { name: "Add a dempartment", value: "add-department" },
+        { name: "Add a role", value: "add-role"},
+        { name: "Add an employee", value: "add-employee" },
+        { name: "Update employee role", value: "edit-employee-role" },
         { name: "Quit", value: "quit"}
       ]
     }
@@ -122,6 +121,22 @@ async function addEmployee(roles, departments, managers) {
   });
 }
 
+async function addDepartment(departments) {
+  inquirer
+.prompt([
+ {
+   type: "input",
+   name: "name",
+   message: "Department name: "
+ }
+])
+.then(function({name}) {
+ db.query(`INSERT INTO departments SET ?`,[{name:name}]);
+ init();
+});
+}
+
+
 const init = async () => {
   let all_departments;
   let all_roles;
@@ -160,9 +175,11 @@ const init = async () => {
         break;
       }
       case ("add-department"):{
+        addDepartment(all_departments);
         break;
       }      
       case ("quit"):{
+        db.end();
         break;
       }
     }        
