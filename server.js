@@ -210,6 +210,30 @@ async function viewEmployeesByManager(employees,managers) {
   });
 }
 
+async function viewTotalBudget(employees,departments,roles) {
+  inquirer
+.prompt([
+{
+  type: "list",
+  name: "department",
+  message: "Department: ",
+  choices: departments[0].map(department => ({name:department.name, value:department.id}))
+}
+])
+  .then(function({employee, department, role}) {
+    // SQL Query
+    let query = `SELECT SUM(salary) AS 'Total Department Budget'
+    FROM employees
+    JOIN roles ON role_id = roles.id
+    JOIN departments ON roles.department_id = departments.id
+    WHERE department_id = ${department}`;
+    db.query(query, function (err, results) {
+      console.table(results);
+      init();
+    });
+  });
+}
+
 async function viewEmployeesByDepartment(employees,departments,roles) {
   inquirer
 .prompt([
@@ -309,6 +333,7 @@ const mainMenu = () => {
         { name: "View all employees", value: "view_all_employees" },
         { name: "View employees by manager", value: "view_employees_by_manager" },
         { name: "View employees by department", value: "view_employees_by_department" },
+        { name: "View total department budget", value: "view-total-budget" },
         { name: "Add a dempartment", value: "add-department" },
         { name: "Add a role", value: "add-role"},
         { name: "Add an employee", value: "add-employee" },
@@ -375,12 +400,20 @@ const init = async () => {
         viewAllDepartments();
         break;
       }
+      case ("view-total-budget"):{
+        viewTotalBudget(all_employees,all_departments,all_roles);
+        break;
+      }
       case ("add-department"):{
         addDepartment(all_departments);
         break;
       }      
       case ("delete-role"):{
         deleteRole(all_roles);
+        break;
+      }       
+      case ("delete-department"):{
+        deleteDepartment(all_departments);
         break;
       }       
       case ("delete-employee"):{
