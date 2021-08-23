@@ -65,28 +65,6 @@ async function viewAllDepartments() {
   });
 }
 
-const mainMenu = () => {
-  const questions = [
-    {
-      type: "list",
-      name: "action",
-      message: "What do you want to do?",
-      choices: [
-        { name: "View all departments", value: "view-all-departments" },
-        { name: "View all roles", value: "view-all-roles" },
-        { name: "View all employees", value: "view_all_employees" },
-        { name: "Add a dempartment", value: "add-department" },
-        { name: "Add a role", value: "add-role"},
-        { name: "Add an employee", value: "add-employee" },
-        { name: "Update employee role", value: "update-employee-role" },
-        { name: "Update employee manager", value: "update-employee-manager" },
-        { name: "Quit", value: "quit"}
-      ]
-    }
-  ];
-  return inquirer.prompt(questions);
-};
-
 async function addEmployee(roles, departments, managers) {
     inquirer
   .prompt([
@@ -206,6 +184,55 @@ async function updateEmployeeManager(employees,managers) {
 });
 }
 
+async function viewEmployeesByManager(employees,managers) {
+  inquirer
+.prompt([
+{
+  type: "list",
+  name: "manager",
+  message: "Manager: ",
+  choices: managers[0].map(manager => ({name:manager.Manager, value:manager.id}))
+}
+])
+  .then(function({employee, manager}) {
+    // SQL Query
+    let query = `SELECT employee.id AS ID, employee.first_Name AS 'First Name', employee.last_Name AS 'Last Name', title AS 'Title', name AS 'Department', salary AS 'Salary'
+    FROM employees employee
+    JOIN roles ON employee.role_id = roles.id
+    JOIN departments ON roles.department_id = departments.id
+    WHERE manager_id = ${manager}
+    GROUP BY employee.id
+    ORDER BY employee.id ASC`;
+    db.query(query, function (err, results) {
+      console.table(results);
+      init();
+    });
+  });
+}
+
+const mainMenu = () => {
+  const questions = [
+    {
+      type: "list",
+      name: "action",
+      message: "What do you want to do?",
+      choices: [
+        { name: "View all departments", value: "view-all-departments" },
+        { name: "View all roles", value: "view-all-roles" },
+        { name: "View all employees", value: "view_all_employees" },
+        { name: "View employees by manager", value: "view_employees_by_manager" },
+        { name: "Add a dempartment", value: "add-department" },
+        { name: "Add a role", value: "add-role"},
+        { name: "Add an employee", value: "add-employee" },
+        { name: "Update employee role", value: "update-employee-role" },
+        { name: "Update employee manager", value: "update-employee-manager" },
+        { name: "Quit", value: "quit"}
+      ]
+    }
+  ];
+  return inquirer.prompt(questions);
+};
+
 const init = async () => {
   let all_departments;
   let all_roles;
@@ -223,6 +250,10 @@ const init = async () => {
     switch (answers.action) {
       case ("view_all_employees"):{
         viewAllEmployees();
+        break;
+      }
+      case ("view_employees_by_manager"):{
+        viewEmployeesByManager(all_employees,all_managers);
         break;
       }
       case ("add-employee"):{
