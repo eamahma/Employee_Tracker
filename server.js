@@ -210,6 +210,34 @@ async function viewEmployeesByManager(employees,managers) {
   });
 }
 
+async function viewEmployeesByDepartment(employees,departments,roles) {
+  inquirer
+.prompt([
+{
+  type: "list",
+  name: "department",
+  message: "Department: ",
+  choices: departments[0].map(department => ({name:department.name, value:department.id}))
+}
+])
+  .then(function({employee, department, role}) {
+    // SQL Query
+    let query = `SELECT employee.id AS ID, employee.first_Name AS 'First Name', employee.last_Name AS 'Last Name', title AS 'Title', name AS 'Department', salary AS 'Salary', GROUP_CONCAT(DISTINCT manager.first_Name,' ', manager.last_Name) AS 'Manager'
+    FROM employees employee
+    JOIN roles ON employee.role_id = roles.id
+    JOIN departments ON roles.department_id = departments.id
+    LEFT JOIN employees manager ON employee.manager_id = manager.id
+    WHERE department_id = ${department}
+    GROUP BY employee.id
+    ORDER BY employee.id ASC`;
+    db.query(query, function (err, results) {
+      console.table(results);
+      init();
+    });
+  });
+}
+
+
 const mainMenu = () => {
   const questions = [
     {
@@ -221,6 +249,7 @@ const mainMenu = () => {
         { name: "View all roles", value: "view-all-roles" },
         { name: "View all employees", value: "view_all_employees" },
         { name: "View employees by manager", value: "view_employees_by_manager" },
+        { name: "View employees by department", value: "view_employees_by_department" },
         { name: "Add a dempartment", value: "add-department" },
         { name: "Add a role", value: "add-role"},
         { name: "Add an employee", value: "add-employee" },
@@ -254,6 +283,10 @@ const init = async () => {
       }
       case ("view_employees_by_manager"):{
         viewEmployeesByManager(all_employees,all_managers);
+        break;
+      }
+      case ("view_employees_by_department"):{
+        viewEmployeesByDepartment(all_employees,all_departments,all_roles);
         break;
       }
       case ("add-employee"):{
