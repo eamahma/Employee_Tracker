@@ -36,7 +36,7 @@ async function viewAllEmployees(req, res) {
   // Query database
   db.query(query, function (err, results) {
   console.table(results);
-  init();
+  start();
 });
 }
 
@@ -48,7 +48,7 @@ async function viewAllRoles() {
   //Query database
   db.query(query, function (err, results) {
     console.table(results);
-    init();
+    start();
   });
 }
 
@@ -61,7 +61,7 @@ async function viewAllDepartments() {
   //db.query('SELECT * FROM departments', function (err, results) {
   db.query(query, function (err, results) {
   console.table(results);
-  init();
+  start();
   });
 }
 
@@ -93,7 +93,7 @@ async function addEmployee(roles, departments, managers) {
  ])
  .then(function({ first_name, last_name, role, manager }) {
    db.query(`INSERT INTO employees SET ?`,[{first_name:first_name, last_name:last_name, role_id:role, manager_id:manager}]);
-   init();
+   start();
   });
 }
 
@@ -108,7 +108,7 @@ async function addDepartment(departments) {
 ])
 .then(function({name}) {
  db.query(`INSERT INTO departments SET ?`,[{name:name}]);
- init();
+ start();
 });
 }
 
@@ -134,7 +134,7 @@ async function addRole(roles, departments) {
 ])
 .then(function({title, salary, department}) {
  db.query(`INSERT INTO roles SET ?`,[{title:title, salary:salary, department_id:department}]);
- init();
+ start();
 });
 }
 
@@ -157,7 +157,7 @@ async function updateEmployeeRole(employees,roles) {
 .then(function({name, employee}) {
   let sql =`UPDATE employees SET role_id =${name} WHERE id = ${employee}`;
   db.query(sql);
-  init();
+  start();
 });
 }
 
@@ -180,7 +180,7 @@ async function updateEmployeeManager(employees,managers) {
 .then(function({employee, manager}) {
   let sql =`UPDATE employees SET manager_id =${manager} WHERE id = ${employee}`;
   db.query(sql);
-  init();
+  start();
 });
 }
 
@@ -205,7 +205,7 @@ async function viewEmployeesByManager(employees,managers) {
     ORDER BY employee.id ASC`;
     db.query(query, function (err, results) {
       console.table(results);
-      init();
+      start();
     });
   });
 }
@@ -229,7 +229,7 @@ async function viewTotalBudget(employees,departments,roles) {
     WHERE department_id = ${department}`;
     db.query(query, function (err, results) {
       console.table(results);
-      init();
+      start();
     });
   });
 }
@@ -256,7 +256,7 @@ async function viewEmployeesByDepartment(employees,departments,roles) {
     ORDER BY employee.id ASC`;
     db.query(query, function (err, results) {
       console.table(results);
-      init();
+      start();
     });
   });
 }
@@ -276,7 +276,7 @@ async function deleteDepartment(departments) {
     let query = `DELETE FROM departments WHERE id = ${department}`;
 
     db.query(query, function (err, results) {
-      init();
+      start();
     });
   });
 }
@@ -296,7 +296,7 @@ async function deleteRole(roles) {
     let query = `DELETE FROM roles WHERE id = ${name}`;
 
     db.query(query, function (err, results) {
-      init();
+      start();
     });
   });
 }
@@ -316,7 +316,7 @@ async function deleteEmployee(employees) {
     let query = `DELETE FROM employees WHERE id = ${employee}`;
 
     db.query(query, function (err, results) {
-      init();
+      start();
     });
   });
 }
@@ -349,7 +349,7 @@ const mainMenu = () => {
   return inquirer.prompt(questions);
 };
 
-const init = async () => {
+const start = async () => {
   let all_departments;
   let all_roles;
   let all_managers;
@@ -429,4 +429,4 @@ const init = async () => {
   .catch((error, response) => {console.error('Error:', error);});
   };
 
-init()
+start()
