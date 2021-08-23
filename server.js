@@ -7,8 +7,8 @@ const consoleTable = require('console.table');
 const app = express();
 app.use(express.json());
 
-
-
+//Clear the screen
+process.stdout.write("\u001b[2J\u001b[0;0H");
 
 // Connect to database
 const db = mysql.createConnection(
@@ -65,9 +65,6 @@ async function viewAllDepartments() {
   });
 }
 
-//Clear the screen
-process.stdout.write("\u001b[2J\u001b[0;0H");
-
 const mainMenu = () => {
   const questions = [
     {
@@ -82,6 +79,7 @@ const mainMenu = () => {
         { name: "Add a role", value: "add-role"},
         { name: "Add an employee", value: "add-employee" },
         { name: "Update employee role", value: "update-employee-role" },
+        { name: "Update employee manager", value: "update-employee-manager" },
         { name: "Quit", value: "quit"}
       ]
     }
@@ -180,7 +178,29 @@ async function updateEmployeeRole(employees,roles) {
 ])
 .then(function({name, employee}) {
   let sql =`UPDATE employees SET role_id =${name} WHERE id = ${employee}`;
-//  db.query(`UPDATE employees SET WHERE ?`,[{id:employee, role_id:name}]);
+  db.query(sql);
+  init();
+});
+}
+
+async function updateEmployeeManager(employees,managers) {
+  inquirer
+.prompt([
+{
+  type: "list",
+  name: "employee",
+  message: "Employee: ",
+  choices: employees[0].map(employee => ({name:employee.Employee, value:employee.id}))
+},
+{
+  type: "list",
+  name: "manager",
+  message: "Manager: ",
+  choices: managers[0].map(manager => ({name:manager.Manager, value:manager.id}))
+}
+])
+.then(function({employee, manager}) {
+  let sql =`UPDATE employees SET manager_id =${manager} WHERE id = ${employee}`;
   db.query(sql);
   init();
 });
@@ -211,6 +231,10 @@ const init = async () => {
       }
       case ("update-employee-role"):{
         updateEmployeeRole(all_employees, all_roles);
+        break;
+      }
+      case ("update-employee-manager"):{
+        updateEmployeeManager(all_employees, all_managers);
         break;
       }
       case ("view-all-roles"):{
