@@ -237,6 +237,65 @@ async function viewEmployeesByDepartment(employees,departments,roles) {
   });
 }
 
+async function deleteDepartment(departments) {
+  inquirer
+.prompt([
+{
+  type: "list",
+  name: "department",
+  message: "Department: ",
+  choices: departments[0].map(department => ({name:department.name, value:department.id}))
+}
+])
+  .then(function({department}) {
+    // SQL Query
+    let query = `DELETE FROM departments WHERE id = ${department}`;
+
+    db.query(query, function (err, results) {
+      init();
+    });
+  });
+}
+
+async function deleteRole(roles) {
+  inquirer
+.prompt([
+  {
+    type: "list",
+    name: "name",
+    message: "Role: ",
+    choices: roles[0].map(role => ({name:role.title, value:role.id}))
+  }
+])
+  .then(function({name}) {
+    // SQL Query
+    let query = `DELETE FROM roles WHERE id = ${name}`;
+
+    db.query(query, function (err, results) {
+      init();
+    });
+  });
+}
+
+async function deleteEmployee(employees) {
+  inquirer
+.prompt([
+  {
+    type: "list",
+    name: "employee",
+    message: "Employee: ",
+    choices: employees[0].map(employee => ({name:employee.Employee, value:employee.id}))
+  }
+])
+  .then(function({employee}) {
+    // SQL Query
+    let query = `DELETE FROM employees WHERE id = ${employee}`;
+
+    db.query(query, function (err, results) {
+      init();
+    });
+  });
+}
 
 const mainMenu = () => {
   const questions = [
@@ -253,6 +312,9 @@ const mainMenu = () => {
         { name: "Add a dempartment", value: "add-department" },
         { name: "Add a role", value: "add-role"},
         { name: "Add an employee", value: "add-employee" },
+        { name: "Delete a dempartment", value: "delete-department" },
+        { name: "Delete a role", value: "delete-role" },
+        { name: "Delete a employee", value: "delete-employee" },
         { name: "Update employee role", value: "update-employee-role" },
         { name: "Update employee manager", value: "update-employee-manager" },
         { name: "Quit", value: "quit"}
@@ -317,6 +379,14 @@ const init = async () => {
         addDepartment(all_departments);
         break;
       }      
+      case ("delete-role"):{
+        deleteRole(all_roles);
+        break;
+      }       
+      case ("delete-employee"):{
+        deleteEmployee(all_employees);
+        break;
+      }       
       case ("quit"):{
         db.end();
         break;
